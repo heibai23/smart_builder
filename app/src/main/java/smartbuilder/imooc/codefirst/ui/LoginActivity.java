@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             //隐藏dialog
                             Thread thread=new Thread();
                             try {
-                                thread.sleep(2000);
+                                thread.sleep(100);
                             } catch (InterruptedException e1) {
                                 e.printStackTrace();
                             }

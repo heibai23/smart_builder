@@ -11,7 +11,7 @@ import smartbuilder.imooc.codefirst.R;
 
 /**
  * 创建时间： 2017/4/26.
- * 描述：TODO
+ * 描述：美女社区
  */
 
 public class GirlFragment extends Fragment {

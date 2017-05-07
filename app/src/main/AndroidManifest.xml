@@ -48,6 +48,12 @@
             android:label="注册"/>
         <!--忘记密码页-->
         <activity android:name=".ui.ForgetPasswordActivity"/>
+        <!--快递查询页-->
+        <activity android:name=".ui.CourierActivity"
+            android:label="物流查询"/>
+        <!--号码对属地查询页-->
+        <activity android:name=".ui.LocationActivity"
+            android:label="号码对属地"/>
 
 
     </application>

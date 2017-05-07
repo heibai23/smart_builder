@@ -26,6 +26,8 @@ import cn.bmob.v3.listener.UpdateListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 import smartbuilder.imooc.codefirst.R;
 import smartbuilder.imooc.codefirst.entity.MyUser;
+import smartbuilder.imooc.codefirst.ui.CourierActivity;
+import smartbuilder.imooc.codefirst.ui.LocationActivity;
 import smartbuilder.imooc.codefirst.ui.LoginActivity;
 import smartbuilder.imooc.codefirst.utils.L;
 import smartbuilder.imooc.codefirst.utils.SharedUtil;
@@ -48,6 +50,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private EditText desc_et;   //简介
 
     private TextView edit_tv;       //编辑资料
+    private TextView courier_tv;      //快递查询
+    private TextView location_tv;    //归属地查询
 
     private Button update_btn;  //修改资料
     private Button exit_btn;        //退出登录
@@ -55,9 +59,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private Button picture_btn;     //相册
     private Button cancel_btn;  //取消
 
+
     private CustomDialog cirleImage_dialog;     //对话框---圆形头像
     private CircleImageView cirleImage_civ; //圆形头像
     private File photoFile=null;    //取得拍照文件
+
+    private CustomDialog loadingDialog;     //正在加载的对话框
 
 
     @Override
@@ -93,9 +100,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         cancel_btn= (Button) cirleImage_dialog.findViewById(R.id.btn_cancel);
 
         edit_tv= (TextView) view.findViewById(R.id.tv_edit_frag);
+        courier_tv = (TextView) view.findViewById(R.id.tv_Courior);
+        location_tv= (TextView) view.findViewById(R.id.tv_location); //归属地查询
 
-
-            //初始化EditText中的个人信息--具体信息
+        //初始化EditText中的个人信息--具体信息
         MyUser userInfo= BmobUser.getCurrentUser(MyUser.class);
         name_et.setText(userInfo.getUsername());
         age_et.setText(userInfo.getAge()+"");
@@ -104,6 +112,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
             //点击事件
         edit_tv.setOnClickListener(this);
+        courier_tv.setOnClickListener(this);
+        location_tv.setOnClickListener(this);
+
         update_btn.setOnClickListener(this);
         exit_btn.setOnClickListener(this);
 
@@ -116,6 +127,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         update_btn.setVisibility(View.GONE);
     //初始设置、恢复头像
         SharedUtil.setImageFromShare(getActivity(),cirleImage_civ);
+
+            //正在加载的对话框
+        loadingDialog=new CustomDialog(getActivity(), WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,R.layout.dialog_loding,
+                R.style.Theme_dialog, Gravity.CENTER,R.style.pop_anim_style);
+        //屏幕外点击无效
+        loadingDialog.setCancelable(false);
 
     }
   /**设置编辑框是否可以编辑            */
@@ -198,35 +216,46 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 break;
                 //dialog里按钮--拍照、相册、取消
             case R.id.btn_camera:
-
+                loadingDialog.show();   //显示加载
                 toCamera();
                 break;
             case R.id.btn_picture:
-
+                loadingDialog.show();   //显示加载
                 toPicture();
                 break;
             case R.id.btn_cancel:
 
                 cirleImage_dialog.dismiss();
                 break;
+                //快递查询
+            case R.id.tv_Courior:
 
+                startActivity(new Intent(getActivity(), CourierActivity.class));
+                break;
+            case R.id.tv_location:
+                startActivity(new Intent(getActivity(), LocationActivity.class));
+                break;
         }
 
     }
 
     /**         跳转到拍照   */
     private void toCamera() {
+        loadingDialog.dismiss();    //关闭加载框
             //跳转相机的action
         Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             //判断内存卡是否可用，可用的话就进行储存
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(
                 new File(Environment.getExternalStorageDirectory(),"fileImgName.jpg")));
         startActivityForResult(intent,CAMERA_REQUEST_CODE);
+
         cirleImage_dialog.dismiss();
 
     }
     /**         跳转到相册   */
     private void toPicture() {
+        loadingDialog.dismiss();    //关闭加载框
+
         Intent intent=new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent,PICTURE_REQUEST_CODE);
